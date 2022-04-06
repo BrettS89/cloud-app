@@ -6,7 +6,7 @@ import CreateApp from '../pages/create-app';
 
 export default () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.REACT_APP_BASE_NAME}>
     <Routes>
       <Route path='/app/create' element={<CreateApp />} />
       <Route path='/app/:id' element={<App />} />
