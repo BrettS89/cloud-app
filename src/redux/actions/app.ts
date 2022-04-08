@@ -3,5 +3,10 @@ import { App } from '../../types';
 
 export const setAppData: Action<App> = (payload) => ({
   type: ActionTypes.SET_APP_DATA,
-  payload: payload,
+  payload,
+});
+
+export const createApp: Action<any> = (payload) => ({
+  type: ActionTypes.CREATE_APP,
+  payload,
 });

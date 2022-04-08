@@ -3,6 +3,7 @@ export enum ActionTypes {
   GET_APPS = 'LOGIN',
   SIGNUP = 'SIGNUP',
   SET_APP_DATA = 'SET_APP_DATA',
+  CREATE_APP = 'CREATE_APP',
 };
 
 interface ActionReturn<T> {
