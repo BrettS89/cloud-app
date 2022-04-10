@@ -33,9 +33,11 @@ const App = () => {
   };
 
   const deployApp = async () => {
-    await api
+    api
       .service('deployment')
       .create({ appId: app?._id });
+
+    setTimeout(() => refreshAppData, 500);
   };
 
   const addEnvVar = (varText: string): void => {
