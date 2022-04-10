@@ -1,14 +1,16 @@
 import {
   call, put, takeLatest, select
 } from 'redux-saga/effects';
+import _cloneDeep from 'lodash/cloneDeep';
 import api from '../../../api';
 import { ActionTypes, setAppData } from '../../actions';
-import { appSelector } from '../../index';
-import { App } from '../../../types/';
+import { appSelector, StoreState } from '../../index';
+import { App, EnvVar } from '../../../types/';
 
 export default [
   getAppsWatcher,
   createAppWatcher,
+  addEnvVarWatcher,
 ];
 
 function * getAppsWatcher() {
@@ -19,12 +21,19 @@ function * createAppWatcher() {
   yield takeLatest(ActionTypes.CREATE_APP, createAppHandler);
 }
 
+function * addEnvVarWatcher() {
+  yield takeLatest(ActionTypes.ADD_ENV_VAR, addEnvVarHandler);
+}
+
 function * getAppsHandler() {
   try {
     const fn = () => api
       .service('app')
       .find({
-        $sort: { createdAt: -1 },
+        query: {
+          $sort: { createdAt: -1 },
+          $resolve: { envVars: true },
+        }
       });
 
     const { data } = yield call(fn);
@@ -45,7 +54,7 @@ interface CreateApp {
 
 function * createAppHandler({ payload }: CreateApp) {
   try {
-    const appState: Record<string, any> = yield select(appSelector);
+    const appState: StoreState['app'] = yield select(appSelector);
 
     const fn = () => api
       .service('app')
@@ -53,10 +62,47 @@ function * createAppHandler({ payload }: CreateApp) {
 
     const createdApp: App = yield call(fn);
     const updatedAppState = [...appState.apps, createdApp];
-    //@ts-ignore
     yield put(setAppData(updatedAppState));
 
     payload.navigate(createdApp._id);
+  } catch(e) {
+    if (e instanceof Error) {
+      alert(e.message);
+    } else {
+      alert('Something went wrong');
+    }
+  }
+}
+
+interface AddEnvVar {
+  type: ActionTypes.ADD_ENV_VAR;
+  payload: {
+    appId: string;
+    envVar: string;
+  };
+}
+
+function * addEnvVarHandler({ payload }: AddEnvVar) {
+  try {
+    const appState: StoreState['app'] = yield select(appSelector);
+
+    const fn = () => api
+      .service('env-var')
+      .create(payload);
+
+    const createdVar: EnvVar = yield call(fn);
+    const clonedState = _cloneDeep(appState);
+
+    const updatedApps = clonedState.apps.map(a => {
+      if (a._id !== payload.appId) return a;
+
+      return {
+        ...a,
+        envVars: [...(a.envVars || []), createdVar],
+      };
+    });
+
+    yield put(setAppData(updatedApps));
   } catch(e) {
     if (e instanceof Error) {
       alert(e.message);

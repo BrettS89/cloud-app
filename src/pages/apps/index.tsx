@@ -12,6 +12,8 @@ const Apps: React.FC = () => {
   const dispatch = useDispatch();
   const appState = useSelector(appSelector);
 
+  console.log(appState.apps);
+
   const renderApps = appState.apps.map(a => (
     <AppCard
       key={a._id}
