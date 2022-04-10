@@ -7,6 +7,7 @@ export interface App extends Resource {
   repo: string;
   branch: string;
   port: number;
+  status: string;
   envVars?: EnvVar[];
 }
 

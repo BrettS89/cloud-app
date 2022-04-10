@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { styled } from '@mui/system';
-import { ActionTypes, appSelector, addEnvVar as addEnvVarAction } from '../../redux';
+import { ActionTypes, appSelector, addEnvVar as addEnvVarAction, getOneApp } from '../../redux';
 import api from '../../api';
 import AppDetails from './app-details';
 import EnvVars from './env-vars';
@@ -13,13 +13,12 @@ const ContentContainer = styled('div')(styles.contentContainer);
 const Header = styled('span')(styles.header);
 
 const App = () => {
+  const [statusInterval, setStatusInterval] = useState(setInterval(() => [], 5000));
   const dispatch = useDispatch();
   const appState = useSelector(appSelector);
   const path = useLocation()
   const appId = path.pathname.split('/')[2]
   const app = appState.apps.find(a => a._id === appId);
-
-  const [isDeploying, setIsDeploying] = useState<boolean>(false);
 
   const fetchApps = () => {
     dispatch({
@@ -27,13 +26,16 @@ const App = () => {
     });
   };
 
+  const refreshAppData = () => {
+    if (app) {
+      dispatch(getOneApp(app!._id));
+    } 
+  };
+
   const deployApp = async () => {
     await api
       .service('deployment')
       .create({ appId: app?._id });
-
-    setIsDeploying(true);
-    setIsDeploying(false);
   };
 
   const addEnvVar = (varText: string): void => {
@@ -44,8 +46,14 @@ const App = () => {
   };
 
   useEffect(() => {
+    setStatusInterval(setInterval(() => refreshAppData(), 5000));
+    
     if (!app) {
       fetchApps();
+    }
+
+    return () => {
+      clearInterval(statusInterval);
     }
   }, []);
 
@@ -59,7 +67,6 @@ const App = () => {
         <AppDetails
           app={app}
           deployApp={deployApp}
-          isDeploying={isDeploying}
         />
         <EnvVars
           addEnvVar={addEnvVar}

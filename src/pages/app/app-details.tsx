@@ -7,7 +7,6 @@ import styles from './styles';
 interface Props {
   app: App;
   deployApp(): void;
-  isDeploying: boolean;
 }
 
 const DetailsContainer = styled('div')(styles.detailsContainer);
@@ -16,22 +15,14 @@ const DetailKey = styled('span')(styles.detailKey);
 const DetailValue = styled('span')(styles.detailValue);
 const ButtonContainer = styled('div')(styles.buttonContainer);
 
-const AppDetails: FC<Props> = ({ app, isDeploying, deployApp }) => {
+const AppDetails: FC<Props> = ({ app, deployApp }) => {
   const renderDeploying = () => {
-    if (isDeploying) {
-      return (
-        <span>
-          Deploying...
-        </span>
-      );
-    }
-
     return (
       <Button
         variant='contained'
-        // color='secondary'
         disableElevation
         onClick={deployApp}
+        disabled={app.status === 'Deploying...'}
       >
         Deploy
       </Button>
@@ -62,6 +53,14 @@ const AppDetails: FC<Props> = ({ app, isDeploying, deployApp }) => {
         </DetailKey>
         <DetailValue>
           {app.branch}
+        </DetailValue>
+      </DetailRow>
+      <DetailRow>
+        <DetailKey>
+          Status:
+        </DetailKey>
+        <DetailValue>
+          {app.status}
         </DetailValue>
       </DetailRow>
       <ButtonContainer>

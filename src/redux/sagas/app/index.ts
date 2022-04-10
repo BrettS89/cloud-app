@@ -11,6 +11,7 @@ export default [
   getAppsWatcher,
   createAppWatcher,
   addEnvVarWatcher,
+  getOneAppWatcher,
 ];
 
 function * getAppsWatcher() {
@@ -23,6 +24,10 @@ function * createAppWatcher() {
 
 function * addEnvVarWatcher() {
   yield takeLatest(ActionTypes.ADD_ENV_VAR, addEnvVarHandler);
+}
+
+function * getOneAppWatcher() {
+  yield takeLatest(ActionTypes.GET_ONE_APP, getOneAppHandler);
 }
 
 function * getAppsHandler() {
@@ -110,4 +115,35 @@ function * addEnvVarHandler({ payload }: AddEnvVar) {
       alert('Something went wrong');
     }
   }
+}
+
+interface GetOneApp {
+  type: ActionTypes.GET_ONE_APP,
+  payload: string;
+}
+
+function * getOneAppHandler({ payload }: GetOneApp) {
+  try {
+    const appState: StoreState['app'] = yield select(appSelector);
+
+    const fn = () => api
+      .service('app')
+      .get(payload, {
+        query: {
+          $resolve: {
+            envVars: true,
+          },
+        },
+      });
+
+    const app: App = yield call(fn);
+
+    const updatedApps = appState.apps.map(a => {
+      return a._id === app._id
+        ? app
+        : a;
+    });
+
+    yield put(setAppData(updatedApps));
+  } catch(e) {}
 }

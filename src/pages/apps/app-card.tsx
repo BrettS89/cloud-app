@@ -8,7 +8,6 @@ import styles from './styles';
 
 interface Props {
   app: App;
-  navigateTo(path: string): void;
 }
 
 const Container = styled('div')(styles.appCard);
@@ -18,7 +17,7 @@ const AppType1 = styled('div')(styles.appType);
 const AppType2 = styled('span')(styles.appCardEnvs);
 const AppTypeContainer = styled('div')(styles.typeContainer)
 
-const AppCard: FC<Props> = ({ app, navigateTo }) => {
+const AppCard: FC<Props> = ({ app }) => {
   const navigate = useNavigate();
 
   return (
@@ -43,7 +42,6 @@ const AppCard: FC<Props> = ({ app, navigateTo }) => {
         
       </LeftSection>
       <div>
-        
         <MoreHorizRoundedIcon style={{ fontSize: 28 }} />
       </div>
     </Container>

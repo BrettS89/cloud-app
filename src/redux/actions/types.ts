@@ -5,6 +5,7 @@ export enum ActionTypes {
   SET_APP_DATA = 'SET_APP_DATA',
   CREATE_APP = 'CREATE_APP',
   ADD_ENV_VAR = 'ADD_ENV_VAR',
+  GET_ONE_APP = 'GET_ONE_APP',
 };
 
 interface ActionReturn<T> {

@@ -27,22 +27,9 @@ const styles = {
   },
   link: {
     color: '#fff',
-    marginLeft: 10
+    marginLeft: 30,
+    cursor: 'pointer',
   },
-  userIcon: {
-    marginLeft: 25,
-  },
-  planText: {
-    paddingLeft: 8,
-    paddingRight: 8,
-    paddingBottom: 8,
-    paddingTop: 6,
-    marginLeft: 10,
-    fontSize: 14,
-  },
-  planName: {
-    fontStyle: 'italic',
-  }
 };
 
 export default styles;
