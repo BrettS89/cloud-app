@@ -37,7 +37,7 @@ const App = () => {
       .service('deployment')
       .create({ appId: app?._id });
 
-    setTimeout(() => refreshAppData, 500);
+    setTimeout(refreshAppData, 500);
   };
 
   const addEnvVar = (varText: string): void => {
